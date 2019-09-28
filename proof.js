@@ -31,10 +31,18 @@ async function handleRequest(request) {
   const timestamp = new Date().getTime()
 
   var sourceCode = await response.text()
-  const urls = sourceCode.match(/<img [^>]*src="[^"]*"[^>]*>/gm).map(x => x.replace(/.*src="([^"]*)".*/, '$1'));
+  var urls = [];
+  matches = sourceCode.match(/<img [^>]*src="[^"]*"[^>]*>/gm);
+  if(matches != null){
+    urls = sourceCode.match(/<img [^>]*src="[^"]*"[^>]*>/gm).map(x => x.replace(/.*src="([^"]*)".*/, '$1'));
+  }
+  
 
   const base64Images = await Promise.all(urls.map(async url => {
-    const buffer = await (await fetch(hostname + url)).arrayBuffer()
+    if(!url.startsWith("http")){
+      url = hostname + url
+    }
+    const buffer = await (await fetch(url)).arrayBuffer()
     return {
       url: url,
       base64: 'data:image/jpeg;base64,' + arrayBufferToBase64(buffer)

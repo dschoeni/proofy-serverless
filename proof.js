@@ -56,10 +56,8 @@ async function handleRequest(request) {
     hashOfSource //ArrayBuffer of data you want to sign
   )
 
-  const signatureString = Array.prototype.map.call(new Uint8Array(signature), x => ('00' + x.toString(16)).slice(-2)).join('')
-
   const headers = new Headers({
-    'Content-Type': 'text/html',
+    'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*'
   })
 

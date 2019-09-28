@@ -1,3 +1,4 @@
+
 addEventListener('fetch', event => {
   event.respondWith(handleRequest(event.request))
 })
@@ -11,22 +12,40 @@ const publicKey = {
   y: 'EY899N9XaXSejPMBAJ8YpmSmpvPvj0pX8K7D2k7OBn8'
 }
 
+function arrayBufferToBase64( buffer ) {
+  var binary = '';
+  var bytes = new Uint8Array( buffer );
+  var len = bytes.byteLength;
+  for (var i = 0; i < len; i++) {
+      binary += String.fromCharCode( bytes[ i ] );
+  }
+  return btoa( binary );
+}
+
 async function handleRequest(request) {
   // usage example
-  const test = decodeURIComponent(request.url.substr(request.url.indexOf('url=') + 4))
-
-  const response = await fetch(test)
+  const uri = decodeURIComponent(request.url.substr(request.url.indexOf('url=') + 4))
+  const url = new URL(uri)
+  const hostname = url.protocol + '//' + url.hostname + '/';
+  const response = await fetch(uri)
   const timestamp = new Date().getTime()
-  const sourceCode = await response.text()
+
+  var sourceCode = await response.text()
+  const urls = sourceCode.match(/<img [^>]*src="[^"]*"[^>]*>/gm).map(x => x.replace(/.*src="([^"]*)".*/, '$1'));
+
+  const base64Images = await Promise.all(urls.map(async url => {
+    const buffer = await (await fetch(hostname + url)).arrayBuffer()
+    return {
+      url: url,
+      base64: 'data:image/jpeg;base64,' + arrayBufferToBase64(buffer)
+    }
+  }))
+
+  for (var i = 0; i < base64Images.length; i++) {
+    sourceCode = sourceCode.replace(base64Images[i].url, base64Images[i].base64, 'g');
+  }
 
   const hashOfSource = await crypto.subtle.digest('SHA-256', new TextEncoder('utf-8').encode(timestamp + sourceCode))
-
-  /*
-  const sha256Hash = Array.prototype.map
-    .call(new Uint8Array(hashOfSource), x => ("00" + x.toString(16)).slice(-2))
-    .join("");
-  */
-
   const privateKey = await crypto.subtle.importKey(
     'jwk',
     {

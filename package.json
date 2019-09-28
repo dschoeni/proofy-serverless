@@ -10,6 +10,7 @@
   "license": "MIT",
   "devDependencies": {
     "dotenv": "^8.1.0",
+    "serverless": "^1.53.0",
     "serverless-cloudflare-workers": "1.0.5",
     "serverless-dotenv-plugin": "^2.1.1"
   },

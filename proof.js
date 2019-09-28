@@ -1,4 +1,5 @@
 
+
 addEventListener('fetch', event => {
   event.respondWith(handleRequest(event.request))
 })
@@ -38,11 +39,20 @@ async function handleRequest(request) {
   }
   
 
-  const base64Images = await Promise.all(urls.map(async url => {
+  const blobs = await Promise.all(urls.map(async url => {
     if(!url.startsWith("http")){
       url = hostname + url
     }
-    const buffer = await (await fetch(url)).arrayBuffer()
+
+    return new Promise(resolve => {
+      setTimeout(() => resolve('timeout'), 8000)
+      return fetch(url).catch(e => e)
+    }).catch(_ => resolve('timeout'))
+  }))
+  const validResults = blobs.filter(result => result !== 'timeout');
+
+  const base64Images = await Promise.all(validResults.map(async blob => {
+    const buffer = await blob.arrayBuffer()
     return {
       url: url,
       base64: 'data:image/jpeg;base64,' + arrayBufferToBase64(buffer)

@@ -3,7 +3,7 @@ Install CloudWorker & start with `-r` for watching.
 
 ```
 npm install -g @dollarshaveclub/cloudworker
-cloudworker -r --debug helloWorld.js
+cloudworker -r --debug proof.js
 ```
 
 # How It Works
@@ -15,6 +15,12 @@ cloudworker -r --debug helloWorld.js
 * Send Back Source, Hash & Signature to Client
 * Client uploads Hash & Signature as Payload in ETH Transaction to Proofy Public Address
 * Client uploads source to IPFS, using TxId as Key 
+
+# ToDo
+
+* TX with Signature & Hash
+* Client keeps: Source + Timestamp
+* Präsi
 
 =>
 

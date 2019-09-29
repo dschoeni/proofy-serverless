@@ -19,7 +19,7 @@ cloudworker -r --debug proof.js
 ```
 
 ### To deploy to the node workers
-You first have to crete a serverless.yml according to [cloudflare]](https://serverless.com/framework/docs/providers/cloudflare/guide/intro/).
+You first have to crete a serverless.yml according to [cloudflare](https://serverless.com/framework/docs/providers/cloudflare/guide/intro/).
 
 ```
 npm install -g serverless
